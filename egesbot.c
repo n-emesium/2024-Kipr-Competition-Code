@@ -11,22 +11,45 @@ void close_claw();
 void move_arm(int n);
 void turn(int n);
 void reset_servos();
+void track_color(int channel, int object_no);
 int main () {
 //shut_down_in(1);
 create_connect();
     enable_servos();
+   
+    /*
     reset_servos();
+    create_drive_direct(100,100);
+    msleep(1000);
+    */
+   
+   
    
     //Digital Lever is Port 0;
 //Servo Port 3 is Arm
 //Servo Port 0 is Claw
    
-    turn(30);
-    drive(1000);
+    /*turn(30);
+    drive(830);
     turn(-80);
     move_arm(2000);
+    turn(-10);
+    camera_open();*/
    
-    drive(500);
+    //drive(500);
+   
+   
+    track_color(0,0);
+   
+    /*
+    open_claw();
+    //move a little here
+    //drive(arbitrarily small number);
+    close_claw();
+    */
+   
+    camera_close();
+   
 disable_servos();
 create_disconnect();
 return 0;
@@ -92,4 +115,25 @@ void reset_servos() {
     msleep(1000);
     set_servo_position(3,0);
     msleep(1000);
+}
+
+void track_color(int channel, int object_no) {
+    while (analog(0) < 2000) {
+        //run camera_update() to get the new position each time
+       
+        camera_update();
+        int x = get_object_center_x(channel,object_no);
+        if (get_object_count(channel) > 0) {
+            if (x > 80) {
+                //turn right
+                create_drive_direct(100,70);
+            } else {
+              //turn left
+                create_drive_direct(70,100);
+            }
+        } else {
+          turn(360);  
+        }
+    }
+    create_stop();
 }
