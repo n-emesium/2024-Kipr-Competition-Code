@@ -38,7 +38,7 @@ create_connect();
    
     //drive(500);
    
-   
+    camera_open();
     track_color(0,0);
    
     /*
@@ -118,22 +118,25 @@ void reset_servos() {
 }
 
 void track_color(int channel, int object_no) {
-    while (analog(0) < 2000) {
+    while (1){//analog(0) < 2000) {
         //run camera_update() to get the new position each time
        
         camera_update();
-        int x = get_object_center_x(channel,object_no);
         if (get_object_count(channel) > 0) {
-            if (x > 80) {
+            if (get_object_center_x(channel,object_no) > 80)
                 //turn right
-                create_drive_direct(100,70);
-            } else {
+                create_drive_direct(200,70);
+            else if (get_object_center_x(channel, object_no) < 80)
               //turn left
-                create_drive_direct(70,100);
-            }
-        } else {
-          turn(360);  
+               create_drive_direct(70,200);
+            else if (get_object_center_x(channel, object_no) == 80)
+               create_drive_direct(200,200);
         }
+        else
+        create_drive_direct(200,200);  
+       
     }
     create_stop();
 }
+
+
