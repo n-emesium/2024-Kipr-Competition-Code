@@ -17,38 +17,35 @@ int main () {
 create_connect();
     enable_servos();
    
-    /*
+   
     reset_servos();
+    turn(30);
     create_drive_direct(100,100);
     msleep(1000);
-    */
    
    
    
     //Digital Lever is Port 0;
 //Servo Port 3 is Arm
 //Servo Port 0 is Claw
-   
-    /*turn(30);
+    /*
     drive(830);
     turn(-80);
     move_arm(2000);
-    turn(-10);
-    camera_open();*/
-   
-    //drive(500);
-   
-    camera_open();
-    track_color(0,0);
-   
-    /*
+    turn(-10);*/
+    move_arm(1750);
     open_claw();
+    camera_open();
+    drive(350);
+    turn(-80);
+    track_color(0,0);
+    camera_close();
     //move a little here
     //drive(arbitrarily small number);
     close_claw();
-    */
+    //drive back here, hold claw
+    //rotate, and then drop cube or wtv at certain (x,y); open_claw() function to drop off the cube;
    
-    camera_close();
    
 disable_servos();
 create_disconnect();
@@ -86,7 +83,7 @@ void open_claw() {
 
 
 void close_claw () {
-    set_servo_position(0,900);
+    set_servo_position(0,1000);
     msleep(1000);
 }
 
@@ -118,25 +115,23 @@ void reset_servos() {
 }
 
 void track_color(int channel, int object_no) {
-    while (1){//analog(0) < 2000) {
+    while (analog(0) < 2000){//analog(0) < 2000) { note: make it so that the while loop condition is not 1; we need to make another flag
         //run camera_update() to get the new position each time
-       
+        //default analog closeness value is around 2100;
         camera_update();
         if (get_object_count(channel) > 0) {
-            if (get_object_center_x(channel,object_no) > 80)
+            if (get_object_center_x(channel,object_no) < 80)
                 //turn right
-                create_drive_direct(200,70);
-            else if (get_object_center_x(channel, object_no) < 80)
+                create_drive_direct(50,200);
+            else if (get_object_center_x(channel, object_no) > 80)
               //turn left
-               create_drive_direct(70,200);
-            else if (get_object_center_x(channel, object_no) == 80)
-               create_drive_direct(200,200);
+               create_drive_direct(200,50);
+           // else if (get_object_center_x(channel, object_no) == 80)
+             //  create_drive_direct(300,300);
         }
         else
-        create_drive_direct(200,200);  
+        create_drive_direct(-100,100);  
        
     }
     create_stop();
 }
-
-
